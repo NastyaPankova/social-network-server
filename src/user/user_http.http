@@ -1,0 +1,19 @@
+### Переменные окружения (можно менять порт)
+#@hostname = localhost
+#@port = 3000
+#@host = http://{{hostname}}:{{port}}
+#
+#
+#### создание пользователя
+#POST {{host}}/user
+#Content-Type: application/json
+#
+#{
+#  "email": "my_user",
+#  "password": "my_pass"
+#}
+#
+#
+#### все пользователи
+#GET {{host}}/user
+#Accept: application/json

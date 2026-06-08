@@ -10,6 +10,17 @@ async function start() {
     .setTitle('backend')
     .setDescription('backend')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Add jwt',
+        in: 'header',
+      },
+      'token',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/api/v1', app, document);

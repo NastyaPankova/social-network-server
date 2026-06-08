@@ -6,10 +6,12 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/createUserDto';
 import { UserService } from './user.service';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiProperty } from '@nestjs/swagger';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -40,6 +42,8 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'get all users' })
+  @ApiBearerAuth('token')
+  @UseGuards(AuthGuard)
   @Get()
   getAllUsers() {
     return this.userService.getAllUsers();

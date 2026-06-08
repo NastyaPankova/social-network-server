@@ -10,8 +10,12 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/createUserDto';
 import { UserService } from './user.service';
-import { ApiBearerAuth, ApiOperation, ApiProperty } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
+import { roleValues } from '../data/roleValues';
+import { RoleGuard } from '../auth/role.guard';
+import { Roles } from '../auth/roles.auth.decoretor';
+
 
 @Controller('user')
 export class UserController {
@@ -35,14 +39,23 @@ export class UserController {
     return this.userService.deleteUser(id);
   }
 
-  @ApiOperation({ summary: 'get user by id' })
+  //todo
+  /*@ApiOperation({ summary: 'get user by id' })
   @Get(':id')
   getUserById(@Param('id') id: number) {
     return this.userService.getUserById(id);
+  }*/
+
+  @ApiOperation({ summary: 'get user by email' })
+  @Get(':email')
+  getUserByEmail(@Param('email') email: string) {
+    return this.userService.getUserByEmail(email);
   }
 
   @ApiOperation({ summary: 'get all users' })
   @ApiBearerAuth('token')
+  @Roles(roleValues.ROLE_ADMIN)
+  @UseGuards(RoleGuard)
   @UseGuards(AuthGuard)
   @Get()
   getAllUsers() {

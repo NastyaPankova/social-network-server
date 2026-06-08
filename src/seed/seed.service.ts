@@ -45,12 +45,16 @@ export class SeedService implements OnApplicationBootstrap {
 
     if (count === 0) {
       const defUsers = [
-        { email: 'user1@mail.com', password: 'pass1', name: 'name1' },
+        { email: 'user1@mail.com', password: 'pass1', name: 'name1'},
         { email: 'user2@mail.com', password: 'pass2', name: 'name2' },
       ];
 
       for (const user of defUsers) {
         await this.userService.createUser(user);
+      }
+      const user = await this.userService.getUserByEmail(defUsers[0].email);
+      if (user instanceof User) {
+        await this.userService.addAdminRoleToUser(user);
       }
     }
     console.log('Add Users');

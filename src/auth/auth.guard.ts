@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate {
 
     {
       console.log(error.message);
-      throw new UnauthorizedException({ message: 'Unauthorized (from guard)' });
+      throw new UnauthorizedException({ message: 'Unauthorized' });
     }
   }
 }

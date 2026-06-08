@@ -26,7 +26,6 @@ export class Role extends Model<Role, RoleCreationAttributes> {
     type: DataType.STRING,
     unique: true,
     allowNull: false,
-    //defaultValue: 'role_user',
   })
   declare value: string;
 

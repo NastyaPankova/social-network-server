@@ -45,8 +45,8 @@ export class SeedService implements OnApplicationBootstrap {
 
     if (count === 0) {
       const defUsers = [
-        { email: 'user1@mail.com', password: 'pass1' },
-        { email: 'user2@mail.com', password: 'pass2' },
+        { email: 'user1@mail.com', password: 'pass1', name: 'name1' },
+        { email: 'user2@mail.com', password: 'pass2', name: 'name2' },
       ];
 
       for (const user of defUsers) {

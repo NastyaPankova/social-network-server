@@ -7,7 +7,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { UserDto } from './dto/userDto';
+import { CreateUserDto } from './dto/createUserDto';
 import { UserService } from './user.service';
 import { ApiOperation } from '@nestjs/swagger';
 
@@ -17,13 +17,13 @@ export class UserController {
 
   @ApiOperation({ summary: 'create user' })
   @Post()
-  create(@Body() dto: UserDto) {
+  create(@Body() dto: CreateUserDto) {
     return this.userService.createUser(dto);
   }
 
   @ApiOperation({ summary: 'update user' })
   @Patch(':id')
-  update(@Param('id') id: number, @Body() dto: Partial<UserDto>) {
+  update(@Param('id') id: number, @Body() dto: Partial<CreateUserDto>) {
     return this.userService.updateUser(id, dto);
   }
 

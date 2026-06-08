@@ -1,24 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from './user.model';
 import { InjectModel } from '@nestjs/sequelize';
-import { UserDto } from './dto/userDto';
+import { CreateUserDto } from './dto/createUserDto';
 import { RoleService } from '../role/role.service';
 import { roleValues } from '../data/roleValues';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User)
-              private userRepository: typeof User,
-              private roleService: RoleService,
+  constructor(
+    @InjectModel(User)
+    private userRepository: typeof User,
+    private roleService: RoleService,
   ) {}
-  async createUser(dto: UserDto) {
-    const user = await this.userRepository.create(dto);
-    const role = await this.roleService.getRoleByValue(roleValues.ROLE_USER);
-    await user.$set('role', [role.id]);
-    return user;
+  async createUser(dto: CreateUserDto) {
+    const user = await this.getUserByEmail(dto.email);
+
+    if (user)
+      throw new HttpException(
+        `User with email ${dto.email} already exists`,
+        HttpStatus.BAD_REQUEST,
+      );
+    else {
+      const new_user = await this.userRepository.create(dto);
+      const role = await this.roleService.getRoleByValue(roleValues.ROLE_USER);
+      await new_user.$set('role', [role.id]);
+      //todo
+      //разобраться со связыванием полей из БД и внутри моделей
+      new_user.role = [role];
+      return new_user;
+    }
   }
 
-  async updateUser(id: number, dto: Partial<UserDto>) {
+  async updateUser(id: number, dto: Partial<CreateUserDto>) {
     const user = await this.userRepository.findByPk(id);
 
     if (!user) {
@@ -44,6 +62,11 @@ export class UserService {
     if (!user) {
       throw new Error('Not found');
     } else return user;
+  }
+
+  async getUserByEmail(email: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
+    return user;
   }
 
   async getAllUsers() {

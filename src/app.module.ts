@@ -9,6 +9,7 @@ import { User_RoleModule } from './manyToMany/user_role/user.role.module';
 import { User_Role } from './manyToMany/user_role/user.role.model';
 import { SeedController } from './seed/seed.controller';
 import { SeedModule } from './seed/seed.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { SeedModule } from './seed/seed.module';
     RoleModule,
     User_RoleModule,
     SeedModule,
+    AuthModule,
   ],
   controllers: [SeedController],
   providers: [],

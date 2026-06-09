@@ -3,7 +3,7 @@ import { User } from './user.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/createUserDto';
 import { RoleService } from '../role/role.service';
-import { roleValues } from '../data/roleValues';
+import { roleValues } from '../../data/roleValues';
 import * as bcrypt from 'bcryptjs';
 import { Role } from '../role/role.model';
 
@@ -25,6 +25,20 @@ export class UserService {
     const role = await this.roleService.getRoleByValue(roleValues.ROLE_ADMIN);
     await user.$add('roles', [role.id]);
     await user.reload({ include: [Role] });
+
+    //todo
+    //другой вариант реализации
+    // async addRoleToUser(dto:AddRoleDto)
+    // {
+    //   const user = await this.userRepository.findByPk(dto.userId);
+    //   const role = await this.roleService.getRoleByValue(dto.roleValue);
+    //   if (user && role)
+    //   {
+    //     await user.$add('roles', [role.id]);
+    //     return dto;
+    //   }
+    //   throw new HttpException('User or role not found', HttpStatus.NOT_FOUND);
+    // }
   }
 
   //todo

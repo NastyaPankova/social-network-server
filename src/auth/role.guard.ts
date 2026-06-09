@@ -45,6 +45,8 @@ export class RoleGuard implements CanActivate {
     } catch (error) {
       //todo
       //console.log(error.message);
+      //todo
+      //как вывести именно 'Access denied'???
       throw new HttpException('Access denied', HttpStatus.FORBIDDEN);
     }
   }

@@ -2,11 +2,19 @@ import {
   BelongsToMany,
   Column,
   DataType,
+  HasMany,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { Role } from '../role/role.model';
-import { User_Role } from '../manyToMany/user_role/user.role.model';
+import { User_Role } from '../user_role/user.role.model';
+import { Post } from '../post/post.model';
+import { Like } from '../like/like.model';
+import { User_User } from '../user_user/user_user.model';
+
+//todo
+//UserCreationAttributes
+//для чего? Добавить name?
 
 interface UserCreationAttributes {
   email: string;
@@ -43,4 +51,18 @@ export class User extends Model<User, UserCreationAttributes> {
 
   @BelongsToMany(() => Role, () => User_Role)
   roles: Role[];
+
+  @HasMany(() => Post, { onDelete: 'CASCADE' })
+  posts: Post[];
+
+  @BelongsToMany(() => Post, () => Like)
+  likes: Post[];
+
+  //на кого подписан
+  @BelongsToMany(() => User, () => User_User, 'followerId', 'followingId')
+  followings: User[];
+
+  //подписчики
+  @BelongsToMany(() => User, () => User_User, 'followingId', 'followerId')
+  followers: User[];
 }

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { Role } from '../role/role.model';
-import { User } from '../user/user.model';
+import { Role } from '../entities/role/role.model';
+import { User } from '../entities/user/user.model';
 import { SeedService } from './seed.service';
-import { UserModule } from '../user/user.module';
-import { RoleModule } from '../role/role.module';
+import { UserModule } from '../entities/user/user.module';
+import { RoleModule } from '../entities/role/role.module';
 
 @Module({
   imports: [SequelizeModule.forFeature([User, Role]), UserModule, RoleModule],

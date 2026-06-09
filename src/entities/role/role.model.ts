@@ -6,7 +6,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { User } from '../user/user.model';
-import { User_Role } from '../manyToMany/user_role/user.role.model';
+import { User_Role } from '../user_role/user.role.model';
 
 interface RoleCreationAttributes {
   value: string;

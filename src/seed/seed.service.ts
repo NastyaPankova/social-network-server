@@ -1,10 +1,10 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { User } from '../user/user.model';
-import { Role } from '../role/role.model';
+import { User } from '../entities/user/user.model';
+import { Role } from '../entities/role/role.model';
 import { roleValues } from '../data/roleValues';
-import { UserService } from '../user/user.service';
-import { RoleService } from '../role/role.service';
+import { UserService } from '../entities/user/user.service';
+import { RoleService } from '../entities/role/role.service';
 
 @Injectable()
 export class SeedService implements OnApplicationBootstrap {
@@ -45,7 +45,7 @@ export class SeedService implements OnApplicationBootstrap {
 
     if (count === 0) {
       const defUsers = [
-        { email: 'user1@mail.com', password: 'pass1', name: 'name1'},
+        { email: 'user1@mail.com', password: 'pass1', name: 'name1' },
         { email: 'user2@mail.com', password: 'pass2', name: 'name2' },
       ];
 

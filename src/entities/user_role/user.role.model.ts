@@ -1,13 +1,12 @@
 import {
-
   Column,
   DataType,
   ForeignKey,
   Model,
   Table,
 } from 'sequelize-typescript';
-import { User } from '../../user/user.model';
-import { Role } from '../../role/role.model';
+import { User } from '../user/user.model';
+import { Role } from '../role/role.model';
 
 @Table({ tableName: 'user_role', timestamps: false })
 export class User_Role extends Model<User_Role> {

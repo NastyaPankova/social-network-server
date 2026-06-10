@@ -2,22 +2,27 @@ import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from '../entities/user/user.model';
 import { Role } from '../entities/role/role.model';
-import { roleValues } from '../data/roleValues';
+import { Post } from '../entities/post/post.model';
 import { UserService } from '../entities/user/user.service';
 import { RoleService } from '../entities/role/role.service';
+import { defPosts, defRoles, defUsers } from './data';
+import { PostService } from '../entities/post/post.service';
 
 @Injectable()
 export class SeedService implements OnApplicationBootstrap {
   constructor(
     @InjectModel(User) private userModel: typeof User,
     @InjectModel(Role) private roleModel: typeof Role,
+    @InjectModel(Post) private postModel: typeof Post,
     private userService: UserService,
     private roleService: RoleService,
+    private postService: PostService,
   ) {}
 
   async onApplicationBootstrap() {
     await this.seedRoles();
     await this.seedUsers();
+    await this.seedPosts();
   }
 
   private async seedRoles() {
@@ -26,11 +31,6 @@ export class SeedService implements OnApplicationBootstrap {
     const count = await this.roleModel.count();
 
     if (count === 0) {
-      const defRoles = [
-        { value: roleValues.ROLE_USER },
-        { value: roleValues.ROLE_ADMIN },
-      ];
-
       for (const role of defRoles) {
         await this.roleService.createRole(role);
       }
@@ -44,11 +44,6 @@ export class SeedService implements OnApplicationBootstrap {
     const count = await this.userModel.count();
 
     if (count === 0) {
-      const defUsers = [
-        { email: 'user1@mail.com', password: 'pass1', name: 'name1' },
-        { email: 'user2@mail.com', password: 'pass2', name: 'name2' },
-      ];
-
       for (const user of defUsers) {
         await this.userService.createUser(user);
       }
@@ -58,5 +53,19 @@ export class SeedService implements OnApplicationBootstrap {
       }
     }
     console.log('Add Users');
+  }
+
+  private async seedPosts() {
+    const count = await this.postModel.count();
+
+    if (count === 0) {
+      for (const [index, post] of defPosts.entries()) {
+        await this.postService.createPost({
+          ...post,
+          authorId: index + 1,
+        });
+      }
+    }
+    console.log('Add Posts');
   }
 }

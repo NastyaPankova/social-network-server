@@ -10,12 +10,14 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/createUserDto';
 import { UserService } from './user.service';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../../auth/auth.guard';
 import { roleValues } from '../../data/roleValues';
 import { RoleGuard } from '../../auth/role.guard';
 import { Roles } from '../../auth/roles.auth.decoretor';
+import { UpdateUserDto } from './dto/updateUserDto';
 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -28,7 +30,7 @@ export class UserController {
 
   @ApiOperation({ summary: 'update user' })
   @Patch(':id')
-  update(@Param('id') id: number, @Body() dto: Partial<CreateUserDto>) {
+  update(@Param('id') id: number, @Body() dto: UpdateUserDto) {
     return this.userService.updateUser(id, dto);
   }
 
@@ -38,15 +40,14 @@ export class UserController {
     return this.userService.deleteUser(id);
   }
 
-  //todo
-  /*@ApiOperation({ summary: 'get user by id' })
-  @Get(':id')
+  @ApiOperation({ summary: 'get user by id' })
+  @Get('id/:id')
   getUserById(@Param('id') id: number) {
     return this.userService.getUserById(id);
-  }*/
+  }
 
   @ApiOperation({ summary: 'get user by email' })
-  @Get(':email')
+  @Get('email/:email')
   getUserByEmail(@Param('email') email: string) {
     return this.userService.getUserByEmail(email);
   }
@@ -60,4 +61,16 @@ export class UserController {
   getAllUsers() {
     return this.userService.getAllUsers();
   }
+
+  //todo
+  //вариант объединения контролеров
+  // @ApiOperation({ summary: 'get user by id or email' })
+  // @Get(':identifier')
+  // getUser(@Param('identifier') identifier: string) {
+  //    //   const id = Number(identifier);
+  //   if (!isNaN(id)) {
+  //     return this.userService.getUserById(id);
+  //   }
+  //   return this.userService.getUserByEmail(identifier);
+  // }
 }

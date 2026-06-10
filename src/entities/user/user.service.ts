@@ -6,6 +6,7 @@ import { RoleService } from '../role/role.service';
 import { roleValues } from '../../data/roleValues';
 import * as bcrypt from 'bcryptjs';
 import { Role } from '../role/role.model';
+import { UpdateUserDto } from './dto/updateUserDto';
 
 @Injectable()
 export class UserService {
@@ -14,10 +15,6 @@ export class UserService {
     private userRepository: typeof User,
     private roleService: RoleService,
   ) {}
-
-  //todo
-  //подумать, где можно вернуть не пользователя, а только id
-  //по возможности заменить getbyemail на getbyid (по id ищется быстрее???)
 
   async addAdminRoleToUser(user: User) {
     //todo
@@ -72,13 +69,21 @@ export class UserService {
     }
   }
 
-  async updateUser(id: number, dto: Partial<CreateUserDto>) {
+  async updateUser(id: number, dto: UpdateUserDto) {
     const user = await this.userRepository.findByPk(id);
 
     if (!user) {
-      throw new Error('Not found');
+      throw new HttpException(
+        `User ${dto.email} not found`,
+        HttpStatus.NOT_FOUND,
+      );
     } else {
-      const updatedUser = user.update(dto);
+      const hashPass = await bcrypt.hash(dto.password, 5);
+      const data = {
+        ...dto,
+        password: hashPass,
+      };
+      const updatedUser = user.update(data);
       return updatedUser;
     }
   }
@@ -87,18 +92,22 @@ export class UserService {
     const user = await this.userRepository.findByPk(id);
 
     if (!user) {
-      throw new Error('Not found');
+      throw new HttpException(`User not found`, HttpStatus.NOT_FOUND);
     } else {
       await user.destroy();
     }
   }
 
-  /*async getUserById(id: number) {
-    const user = await this.userRepository.findByPk(id);
-    if (!user) {
-      throw new Error('Not found');
-    } else return user;
-  }*/
+  async getUserById(id: number) {
+    const user = await this.userRepository.findByPk(id, {
+      include: [
+        {
+          model: Role,
+        },
+      ],
+    });
+    return user;
+  }
 
   async getUserByEmail(email: string) {
     const user = await this.userRepository.findOne({

@@ -1,4 +1,3 @@
-### Переменные окружения (можно менять порт)
 #@hostname = localhost
 #@port = 3000
 #@host = http://{{hostname}}:{{port}}

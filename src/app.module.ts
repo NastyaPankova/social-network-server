@@ -48,7 +48,7 @@ import { User_User } from './entities/user_user/user_user.model';
     LikeModule,
     User_UserModule,
   ],
-  controllers: [SeedController, PostController, User_UserController],
-  providers: [PostService, User_UserService],
+  controllers: [SeedController],
+  providers: [],
 })
 export class AppModule {}

@@ -1,12 +1,12 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { User } from '../entities/user/user.model';
-import { Role } from '../entities/role/role.model';
-import { Post } from '../entities/post/post.model';
-import { UserService } from '../entities/user/user.service';
-import { RoleService } from '../entities/role/role.service';
+import { User } from '../../entities/user/user.model';
+import { Role } from '../../entities/role/role.model';
+import { Post } from '../../entities/post/post.model';
+import { UserService } from '../../entities/user/user.service';
+import { RoleService } from '../../entities/role/role.service';
 import { defPosts, defRoles, defUsers } from './data';
-import { PostService } from '../entities/post/post.service';
+import { PostService } from '../../entities/post/post.service';
 
 @Injectable()
 export class SeedService implements OnApplicationBootstrap {

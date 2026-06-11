@@ -59,4 +59,14 @@ export class Post extends Model<Post, PostCreationAttributes> {
 
   @BelongsToMany(() => User, () => Like)
   likes: User[];
+
+  //q
+  //дополнительно поле для подсчета лайков
+  //через хуки (по сути - триггеры на удаление и добавление записей в таблицу like?)
+  @Column({
+    type: DataType.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+  })
+  likesCount: number;
 }

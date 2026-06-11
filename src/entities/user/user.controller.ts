@@ -12,7 +12,7 @@ import { CreateUserDto } from './dto/createUserDto';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../../auth/auth.guard';
-import { roleValues } from '../../data/roleValues';
+import { roleValues } from '../../app/data/roleValues';
 import { RoleGuard } from '../../auth/role.guard';
 import { Roles } from '../../auth/roles.auth.decoretor';
 import { UpdateUserDto } from './dto/updateUserDto';

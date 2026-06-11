@@ -3,7 +3,7 @@ import { User } from './user.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/createUserDto';
 import { RoleService } from '../role/role.service';
-import { roleValues } from '../../data/roleValues';
+import { roleValues } from '../../app/data/roleValues';
 import * as bcrypt from 'bcryptjs';
 import { Role } from '../role/role.model';
 import { UpdateUserDto } from './dto/updateUserDto';
@@ -40,8 +40,9 @@ export class UserService {
 
   //todo
   //сделать проверки
-
   async createUser(dto: CreateUserDto) {
+    //q
+    //метод относительно редкий, оставить getUserByEmail?
     const user = await this.getUserByEmail(dto.email);
 
     if (user)

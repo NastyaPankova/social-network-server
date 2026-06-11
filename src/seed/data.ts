@@ -12,7 +12,7 @@ export const defRoles = [
 ];
 
 export const defPosts = [
-  { title: 'Title 1', date: new Date(), content: 'Content 1', media: 'URL1' },
-  { title: 'Title 2', date: new Date(), content: 'Content 2', media: 'URL2' },
-  { title: 'Title 3', date: new Date(), content: 'Content 3', media: 'URL3' },
+  { title: 'Title 1', content: 'Content 1', media: 'URL1' },
+  { title: 'Title 2', content: 'Content 2', media: 'URL2' },
+  { title: 'Title 3', content: 'Content 3', media: 'URL3' },
 ];

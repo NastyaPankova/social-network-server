@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -47,7 +48,9 @@ export class RoleGuard implements CanActivate {
       //console.log(error.message);
       //todo
       //как вывести именно 'Access denied'???
-      throw new HttpException('Access denied', HttpStatus.FORBIDDEN);
+     // throw new HttpException('Access denied', HttpStatus.FORBIDDEN);
+      console.log('catch')
+      throw new ForbiddenException({ message: 'Access denied' });
     }
   }
 }

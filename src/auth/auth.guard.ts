@@ -22,6 +22,8 @@ export class AuthGuard implements CanActivate {
       if (bearer !== 'Bearer' || !token) {
         throw new UnauthorizedException({ message: 'Unauthorized' });
       }
+      //todo
+      //изменить врея жизни токена и посмотреть, что будет в catch
       const user = this.jwtService.verify(token);
       request.user = user;
       return true;

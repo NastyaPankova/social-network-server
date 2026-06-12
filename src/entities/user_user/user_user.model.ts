@@ -17,12 +17,12 @@ export class User_User extends Model<User_User> {
     type: DataType.INTEGER,
     primaryKey: true,
   })
-  followerId: number;
+  declare followerId: number;
 
   @ForeignKey(() => User)
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
   })
-  followingId: number;
+  declare followingId: number;
 }

@@ -22,14 +22,14 @@ export class Like extends Model<Like, LikeDto> {
     type: DataType.INTEGER,
     primaryKey: true,
   })
-  userId: number;
+  declare userId: number;
 
   @ForeignKey(() => Post)
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
   })
-  postId: number;
+  declare postId: number;
 
   //q
   //триггер на добавление записи?

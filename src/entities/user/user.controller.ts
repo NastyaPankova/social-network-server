@@ -16,6 +16,7 @@ import { roleValues } from '../../app/data/roleValues';
 import { RoleGuard } from '../../auth/role.guard';
 import { Roles } from '../../auth/roles.auth.decoretor';
 import { UpdateUserDto } from './dto/updateUserDto';
+import { SubscriptionDto } from './dto/subscriptionDto';
 
 @ApiTags('User')
 @Controller('user')
@@ -73,4 +74,39 @@ export class UserController {
   //   }
   //   return this.userService.getUserByEmail(identifier);
   // }
+
+  //q
+  //варианты получения id пользователей, предложенные ИИ
+  @ApiOperation({ summary: 'subscribe' })
+  // @UseGuards(JwtAuthGuard) // Раскомментируйте, если есть авторизация (ИИ)
+  @Post(':id/follow')
+  async follow(@Body() dto: SubscriptionDto) {
+    //async follow(
+    // @Param('id', ParseIntPipe) followingId: number, // (ИИ)
+    //@Req() req: any, // req.user.id должен приходить из вашей стратегии авторизации (ИИ)
+    // const currentUserId = req.user.id; // ID текущего авторизованного юзера (ИИ)
+    //await this.userService.follow(currentUserId, followingId); (ИИ)
+    await this.userService.follow(dto);
+    return { message: 'Subscribe' };
+  }
+
+  @ApiOperation({ summary: 'unsubscribe' })
+  // @UseGuards(JwtAuthGuard)
+  @Delete(':id/unfollow')
+  async unfollow(@Body() dto: SubscriptionDto) {
+    await this.userService.unfollow(dto);
+    return { message: 'Unsubscribe' };
+  }
+
+  @ApiOperation({ summary: 'user`s followings' })
+  @Get(':id/followings')
+  async getFollowings(@Param('id') id: number) {
+    return this.userService.getFollowings(id);
+  }
+
+  @ApiOperation({ summary: 'user`s followers' })
+  @Get(':id/followers')
+  async getFollowers(@Param('id') id: number) {
+    return this.userService.getFollowers(id);
+  }
 }

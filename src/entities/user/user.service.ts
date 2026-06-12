@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { User } from './user.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/createUserDto';
@@ -7,6 +12,8 @@ import { roleValues } from '../../app/data/roleValues';
 import * as bcrypt from 'bcryptjs';
 import { Role } from '../role/role.model';
 import { UpdateUserDto } from './dto/updateUserDto';
+import { isExistsById } from '../../app/helpers/ExistModel';
+import { SubscriptionDto } from './dto/subscriptionDto';
 
 @Injectable()
 export class UserService {
@@ -15,6 +22,10 @@ export class UserService {
     private userRepository: typeof User,
     private roleService: RoleService,
   ) {}
+
+  //q
+  //в некоторых методах чистый findByPk, в других -с параметрами
+  //как лучше
 
   async addAdminRoleToUser(user: User) {
     //todo
@@ -125,5 +136,54 @@ export class UserService {
   async getAllUsers() {
     const users = await this.userRepository.findAll();
     return users;
+  }
+
+  async follow(dto: SubscriptionDto) {
+    //q
+    //вообще не должно сложиться такой ситуации
+    if (dto.followingId === dto.followerId) throw new BadRequestException();
+
+    await isExistsById(this.userRepository, dto.followingId);
+    await isExistsById(this.userRepository, dto.followerId);
+
+    const follower = await this.userRepository.findByPk(dto.followerId, {
+      attributes: ['id', 'name'],
+    });
+    //q
+    //не знаю, как обработать возможные дубликаты
+    await follower!.$add('followings', dto.followingId);
+  }
+
+  async unfollow(dto: SubscriptionDto) {
+    await isExistsById(this.userRepository, dto.followerId);
+
+    const follower = await this.userRepository.findByPk(dto.followerId, {
+      attributes: ['id', 'name'],
+    });
+
+    await follower!.$remove('followings', dto.followingId);
+  }
+
+  //на кого подписан
+  async getFollowings(id: number) {
+    await isExistsById(this.userRepository, id);
+    const user = await this.userRepository.findByPk(id, {
+      include: [{ model: User, as: 'followings', attributes: ['id', 'name'] }],
+    });
+    const userData = user!.get({ plain: true });
+    const followings = userData.followings;
+    return followings;
+    return followings;
+  }
+
+  //кто подписан
+  async getFollowers(id: number) {
+    await isExistsById(this.userRepository, id);
+    const user = await this.userRepository.findByPk(id, {
+      include: [{ model: User, as: 'followers', attributes: ['id', 'name'] }],
+    });
+    const userData = user!.get({ plain: true });
+    const followers = userData.followers;
+    return followers;
   }
 }

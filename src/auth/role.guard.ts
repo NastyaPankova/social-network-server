@@ -11,12 +11,14 @@ import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from './roles.auth.decoretor';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private reflector: Reflector,
+    private configService: ConfigService,
   ) {}
   canActivate(
     context: ExecutionContext,
@@ -40,16 +42,20 @@ export class RoleGuard implements CanActivate {
       if (bearer !== 'Bearer' || !token) {
         throw new UnauthorizedException({ message: 'Unauthorized' });
       }
-      const user = this.jwtService.verify(token);
+      const accessSecretKey =
+        this.configService.get<string>('JWT_ACCESS_SECRET') || 'MySecret';
+
+      const user = this.jwtService.verify(token, { secret: accessSecretKey });
+
       request.user = user;
-      return user.roles.some(role => roles.includes(role.value));
+      return user.roles.some((role) => roles.includes(role.value));
     } catch (error) {
       //todo
       //console.log(error.message);
       //todo
       //как вывести именно 'Access denied'???
-     // throw new HttpException('Access denied', HttpStatus.FORBIDDEN);
-      console.log('catch')
+      // throw new HttpException('Access denied', HttpStatus.FORBIDDEN);
+      console.log('catch');
       throw new ForbiddenException({ message: 'Access denied' });
     }
   }

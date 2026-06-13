@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UserModule } from './entities/user/user.module';
 import { ConfigModule } from '@nestjs/config';
@@ -11,20 +11,20 @@ import { User_Role } from './entities/user_role/user.role.model';
 import { SeedController } from './app/seed/seed.controller';
 import { SeedModule } from './app/seed/seed.module';
 import { AuthModule } from './auth/auth.module';
-import { PostService } from './entities/post/post.service';
-import { PostController } from './entities/post/post.controller';
 import { PostModule } from './entities/post/post.module';
 import { LikeModule } from './entities/like/like.module';
-import { User_UserService } from './entities/user_user/user_user.service';
-import { User_UserController } from './entities/user_user/user_user.controller';
 import { User_UserModule } from './entities/user_user/user_user.module';
 import { Like } from './entities/like/like.model';
 import { User_User } from './entities/user_user/user_user.model';
+import { RefTokenModule } from './entities/refToken/refToken.module';
+import cookieParser from 'cookie-parser';
+import { RefToken } from './entities/refToken/refToken.model';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: '.env',
+      isGlobal: true,
     }),
     SequelizeModule.forRoot({
       dialect: 'mysql',
@@ -33,7 +33,7 @@ import { User_User } from './entities/user_user/user_user.model';
       username: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DB,
-      models: [User, Role, User_Role, Post, Like, User_User],
+      models: [User, Role, User_Role, Post, Like, User_User, RefToken],
       autoLoadModels: true,
       //todo
       //удалить!!!
@@ -47,8 +47,13 @@ import { User_User } from './entities/user_user/user_user.model';
     PostModule,
     LikeModule,
     User_UserModule,
+    RefTokenModule,
   ],
   controllers: [SeedController],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(cookieParser()).forRoutes('*');
+  }
+}

@@ -5,33 +5,44 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Observable } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService) {}
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp().getRequest()
-    try{
+
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService, // Добавляем ConfigService в конструктор
+  ) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+
+    try {
       const authHeader = request.headers.authorization;
-      const bearer = authHeader.split(' ')[0];
-      const token = authHeader.split(' ')[1];
+
+
+      if (!authHeader) {
+        throw new UnauthorizedException({ message: 'Unauthorized' });
+      }
+
+      const [bearer, token] = authHeader.split(' ');
 
       if (bearer !== 'Bearer' || !token) {
         throw new UnauthorizedException({ message: 'Unauthorized' });
       }
-      //todo
-      //изменить врея жизни токена и посмотреть, что будет в catch
-      const user = this.jwtService.verify(token);
+
+
+      const accessSecretKey =
+        this.configService.get<string>('JWT_ACCESS_SECRET') || 'MySecret';
+
+      const user = this.jwtService.verify(token, { secret: accessSecretKey });
+
       request.user = user;
       return true;
-    }
-    catch (error)
+    } catch (error: any) {
+      console.log('Guard Error:', error.message);
 
-    {
-      console.log(error.message);
       throw new UnauthorizedException({ message: 'Unauthorized' });
     }
   }

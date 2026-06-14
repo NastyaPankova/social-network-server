@@ -3,6 +3,7 @@ import {
   Column,
   DataType,
   HasMany,
+  HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
@@ -11,6 +12,7 @@ import { User_Role } from '../user_role/user.role.model';
 import { Post } from '../post/post.model';
 import { Like } from '../like/like.model';
 import { User_User } from '../user_user/user_user.model';
+import { RefreshToken } from '../refreshToken/refreshToken.model';
 
 //todo
 //UserCreationAttributes
@@ -65,4 +67,7 @@ export class User extends Model<User, UserCreationAttributes> {
   //подписчики
   @BelongsToMany(() => User, () => User_User, 'followingId', 'followerId')
   followers: User[];
+
+  @HasOne(() => RefreshToken)
+  refreshToken: RefreshToken;
 }

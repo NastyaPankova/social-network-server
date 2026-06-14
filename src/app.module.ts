@@ -16,9 +16,10 @@ import { LikeModule } from './entities/like/like.module';
 import { User_UserModule } from './entities/user_user/user_user.module';
 import { Like } from './entities/like/like.model';
 import { User_User } from './entities/user_user/user_user.model';
-import { RefTokenModule } from './entities/refToken/refToken.module';
+import { RefreshTokenModule } from './entities/refreshToken/refreshToken.module';
 import cookieParser from 'cookie-parser';
-import { RefToken } from './entities/refToken/refToken.model';
+import { RefreshToken } from './entities/refreshToken/refreshToken.model';
+import { Sequelize } from 'sequelize';
 
 @Module({
   imports: [
@@ -33,11 +34,22 @@ import { RefToken } from './entities/refToken/refToken.model';
       username: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DB,
-      models: [User, Role, User_Role, Post, Like, User_User, RefToken],
+      models: [RefreshToken, User, Role, User_Role, Post, Like, User_User],
       autoLoadModels: true,
       //todo
       //удалить!!!
       sync: { force: true },
+      //todo
+      //сбрасывает внешние ключи перед удалением
+      //затем устанавливает перед созданием
+      hooks: {
+        beforeBulkSync: async function (this: Sequelize) {
+          await this.query('SET FOREIGN_KEY_CHECKS = 0;');
+        },
+        afterBulkSync: async function (this: Sequelize) {
+          await this.query('SET FOREIGN_KEY_CHECKS = 1;');
+        },
+      },
     }),
     UserModule,
     RoleModule,
@@ -47,7 +59,7 @@ import { RefToken } from './entities/refToken/refToken.model';
     PostModule,
     LikeModule,
     User_UserModule,
-    RefTokenModule,
+    RefreshTokenModule,
   ],
   controllers: [SeedController],
   providers: [],

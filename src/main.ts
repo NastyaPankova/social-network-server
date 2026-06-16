@@ -9,6 +9,11 @@ async function start() {
   app.enableCors({
     origin: 'http://localhost:5173',
     credentials: true,
+
+    //q
+    //Это нужно?
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
 
   const config = new DocumentBuilder()

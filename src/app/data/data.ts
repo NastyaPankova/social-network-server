@@ -1,4 +1,4 @@
-import { roleValues } from '../data/roleValues';
+import { roleValues } from './roleValues';
 
 export const defUsers = [
   { email: 'user1@mail.com', password: 'pass1', name: 'name1' },

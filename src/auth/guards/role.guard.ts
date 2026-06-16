@@ -10,7 +10,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
-import { ROLES_KEY } from './roles.auth.decoretor';
+import { ROLES_KEY } from '../decorators/roles.auth.decorator';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

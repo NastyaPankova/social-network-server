@@ -5,7 +5,7 @@ import { Role } from '../../entities/role/role.model';
 import { Post } from '../../entities/post/post.model';
 import { UserService } from '../../entities/user/user.service';
 import { RoleService } from '../../entities/role/role.service';
-import { defPosts, defRoles, defUsers } from './data';
+import { defPosts, defRoles, defUsers } from '../data/data';
 import { PostService } from '../../entities/post/post.service';
 
 @Injectable()

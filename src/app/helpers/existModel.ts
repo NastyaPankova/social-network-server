@@ -1,7 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { Model, ModelStatic, WhereOptions } from 'sequelize';
 
-
 export const isExistsById = async <T extends Model>(
   model: ModelStatic<T>,
   id: number,

@@ -12,7 +12,7 @@ import { roleValues } from '../../app/data/roleValues';
 import * as bcrypt from 'bcryptjs';
 import { Role } from '../role/role.model';
 import { UpdateUserDto } from './dto/updateUserDto';
-import { isExistsById } from '../../app/helpers/ExistModel';
+import { isExistsById } from '../../app/helpers/existModel';
 import { SubscriptionDto } from './dto/subscriptionDto';
 
 @Injectable()

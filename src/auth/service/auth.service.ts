@@ -1,0 +1,60 @@
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { LoginUserDto } from '../../entities/user/dto/loginUserDto';
+import { CreateUserDto } from '../../entities/user/dto/createUserDto';
+import { UserService } from '../../entities/user/user.service';
+import { RefreshTokenService } from '../../entities/refreshToken/refreshToken.service';
+import { TokenService } from './token.service';
+import { PayloadDto } from '../dto/payloadDto';
+
+@Injectable()
+export class AuthService {
+  constructor(
+    private userService: UserService,
+    private refreshTokenService: RefreshTokenService,
+    private tokenService: TokenService,
+  ) {}
+
+  async login(dto: LoginUserDto) {
+    const user = await this.tokenService.validateUser(dto);
+    const tokens = await this.tokenService.generateToken(user);
+    await this.refreshTokenService.saveRefreshToken(
+      user.id,
+      tokens.refreshToken,
+    );
+    return tokens;
+  }
+
+  async registration(dto: CreateUserDto) {
+    const new_user = await this.userService.createUser(dto);
+    const tokens = await this.tokenService.generateToken(new_user);
+    await this.refreshTokenService.saveRefreshToken(
+      new_user.id,
+      tokens.refreshToken,
+    );
+    return tokens;
+  }
+
+  async logout(refreshToken: string) {
+    const deletedTokens =
+      await this.refreshTokenService.removeToken(refreshToken);
+    return deletedTokens;
+  }
+
+  async refresh(refreshToken: string) {
+    const token = await this.refreshTokenService.findToken(refreshToken);
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+    const payLoad = await this.tokenService.validateRefreshToken(refreshToken) as PayloadDto;
+    if (!payLoad) {
+      throw new UnauthorizedException();
+    }
+    const user = await this.userService.getUserById(payLoad.id);
+    const tokens = await this.tokenService.generateToken(user!);
+    await this.refreshTokenService.saveRefreshToken(
+      payLoad.id,
+      tokens.refreshToken,
+    );
+    return tokens;
+  }
+}

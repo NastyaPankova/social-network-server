@@ -22,6 +22,7 @@ import { roleValues } from '../../app/data/roleValues';
 import { RoleGuard } from '../guards/role.guard';
 import { AuthGuard } from '../guards/auth.guard';
 import * as authRequest from '../dto/authRequest';
+import { RefreshTokenGuard } from '../guards/refresh.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')

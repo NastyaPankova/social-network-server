@@ -5,6 +5,8 @@ import { UserService } from '../../entities/user/user.service';
 import { RefreshTokenService } from '../../entities/refreshToken/refreshToken.service';
 import { TokenService } from './token.service';
 import { PayloadDto } from '../dto/payloadDto';
+import { LoginResponse } from '../../entities/user/response/loginResponse';
+import { UserResponse } from '../../entities/user/response/userResponse';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +23,7 @@ export class AuthService {
       user.id,
       tokens.refreshToken,
     );
-    return tokens;
+    return { tokens, user };
   }
 
   async registration(dto: CreateUserDto) {
@@ -50,11 +52,13 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     const user = await this.userService.getUserById(payLoad.id);
-    const tokens = await this.tokenService.generateToken(user!);
+    if (!user) throw new UnauthorizedException();
+
+    const tokens = await this.tokenService.generateToken(user);
     await this.refreshTokenService.saveRefreshToken(
       payLoad.id,
       tokens.refreshToken,
     );
-    return tokens;
+    return { tokens, user };
   }
 }

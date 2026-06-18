@@ -43,8 +43,8 @@ export class TokenService {
   async generateToken(user: User) {
     const plainUser = user.get({ plain: true });
     const payload: PayloadDto = {
-      email: plainUser.email,
       id: plainUser.id,
+      name: plainUser.name,
       roles: plainUser.roles,
     };
 

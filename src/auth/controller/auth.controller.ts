@@ -1,18 +1,35 @@
-import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { LoginUserDto } from '../../entities/user/dto/loginUserDto';
 import { CreateUserDto } from '../../entities/user/dto/createUserDto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import express from 'express';
 import { setCookieOptions } from '../../app/helpers/setCookieOptions';
 import { refreshTokenExpirationTime } from '../../app/data/expirationTime';
 import { refreshTokenCookieName } from '../../app/data/cookiesNames';
+import { LoginResponse } from '../../entities/user/response/loginResponse';
+import { UserResponse } from '../../entities/user/response/userResponse';
+import { Roles } from '../decorators/roles.auth.decorator';
+import { roleValues } from '../../app/data/roleValues';
+import { RoleGuard } from '../guards/role.guard';
+import { AuthGuard } from '../guards/auth.guard';
+import * as authRequest from '../dto/authRequest';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private aurhService: AuthService) {}
 
+  //q
+  //*
   @ApiOperation({ summary: 'login (email, password)' })
   @Post('/login')
   async login(
@@ -23,11 +40,22 @@ export class AuthController {
 
     response.cookie(
       refreshTokenCookieName,
-      data.refreshToken,
+      data.tokens.refreshToken,
       setCookieOptions(refreshTokenExpirationTime),
     );
 
-    return data;
+    const user: UserResponse = {
+      id: data.user.id,
+      name: data.user.name,
+    };
+
+    const loginRespons: LoginResponse = {
+      accessToken: data.tokens.accessToken,
+      refreshToken: data.tokens.refreshToken,
+      user: user,
+    };
+
+    return loginRespons;
   }
   @ApiOperation({ summary: 'registration (email, password, name)' })
   @Post('/registration')
@@ -68,16 +96,37 @@ export class AuthController {
     @Req() request: express.Request,
     @Res({ passthrough: true }) response: express.Response,
   ) {
-
     const refreshToken = request.cookies[refreshTokenCookieName] as string;
     const data = await this.aurhService.refresh(refreshToken);
 
     response.cookie(
       refreshTokenCookieName,
-      data.refreshToken,
+      data.tokens.refreshToken,
       setCookieOptions(refreshTokenExpirationTime),
     );
 
-    return data;
+    const user: UserResponse = {
+      id: data.user.id,
+      name: data.user.name,
+    };
+
+    const loginRespons: LoginResponse = {
+      accessToken: data.tokens.accessToken,
+      refreshToken: data.tokens.refreshToken,
+      user: user,
+    };
+
+    return loginRespons;
+  }
+
+  @ApiBearerAuth('token')
+  @UseGuards(AuthGuard)
+  @Get('/me')
+  getMe(@Req() request: authRequest.AuthRequest) {
+    const user = {
+      id: request.user.id,
+      name: request.user.name,
+    };
+    return user;
   }
 }

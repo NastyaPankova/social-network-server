@@ -1,1 +1,1 @@
-export const refreshTokenCookieName = 'refresh_token';
+export const refreshTokenCookieName = 'refreshToken';

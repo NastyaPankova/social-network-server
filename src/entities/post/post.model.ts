@@ -1,6 +1,8 @@
 import {
+  BelongsTo,
   BelongsToMany,
   Column,
+  CreatedAt,
   DataType,
   ForeignKey,
   Model,
@@ -11,10 +13,11 @@ import { User } from '../user/user.model';
 import { Like } from '../like/like.model';
 
 interface PostCreationAttributes {
+  createdAt: Date;
   title: string;
-  date: Date;
   content: string;
   media: string;
+  authorId: number;
 }
 
 @Table({ tableName: 'post', timestamps: false })
@@ -28,21 +31,21 @@ export class Post extends Model<Post, PostCreationAttributes> {
   declare id: number;
 
   @Column({
+    type: DataType.DATE,
+    field: 'createdAt',
+  })
+  declare createdAt: Date;
+
+  @Column({
     type: DataType.STRING,
     allowNull: false,
   })
   declare title: string;
 
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-  })
-  declare date: Date;
-
   //todo
   //увеличить поле для текстового контента
   @Column({
-    type: DataType.STRING,
+    type: DataType.TEXT,
   })
   declare content: string;
 
@@ -54,10 +57,14 @@ export class Post extends Model<Post, PostCreationAttributes> {
   @ForeignKey(() => User)
   @Column({
     type: DataType.INTEGER,
+    field: 'authorId',
   })
   declare authorId: number;
 
-  @BelongsToMany(() => User, () => Like)
+  @BelongsTo(() => User, { foreignKey: 'authorId', as: 'author' })
+  author: User;
+
+  @BelongsToMany(() => User, { through: () => Like, as: 'likedByUsers' })
   likes: User[];
 
   //q
@@ -67,6 +74,7 @@ export class Post extends Model<Post, PostCreationAttributes> {
     type: DataType.INTEGER,
     defaultValue: 0,
     allowNull: false,
+    field: 'likesCount',
   })
   likesCount: number;
 }

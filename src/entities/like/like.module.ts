@@ -10,5 +10,6 @@ import { Like } from './like.model';
   imports: [SequelizeModule.forFeature([Post, User, Like])],
   controllers: [LikeController],
   providers: [LikeService],
+  exports: [LikeService],
 })
 export class LikeModule {}

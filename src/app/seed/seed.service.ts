@@ -5,8 +5,12 @@ import { Role } from '../../entities/role/role.model';
 import { Post } from '../../entities/post/post.model';
 import { UserService } from '../../entities/user/user.service';
 import { RoleService } from '../../entities/role/role.service';
-import { defPosts, defRoles, defUsers } from '../data/data';
+import { defLikes, defPosts, defRoles, defUsers } from '../data/data';
 import { PostService } from '../../entities/post/post.service';
+import { extname, join } from 'path';
+import * as fs from 'node:fs';
+import { Like } from '../../entities/like/like.model';
+import { LikeService } from '../../entities/like/like.service';
 
 @Injectable()
 export class SeedService implements OnApplicationBootstrap {
@@ -14,15 +18,18 @@ export class SeedService implements OnApplicationBootstrap {
     @InjectModel(User) private userModel: typeof User,
     @InjectModel(Role) private roleModel: typeof Role,
     @InjectModel(Post) private postModel: typeof Post,
+    @InjectModel(Like) private likeModel: typeof Like,
     private userService: UserService,
     private roleService: RoleService,
     private postService: PostService,
+    private likeService: LikeService,
   ) {}
 
   async onApplicationBootstrap() {
     await this.seedRoles();
     await this.seedUsers();
     await this.seedPosts();
+    await this.seedLikes();
   }
 
   private async seedRoles() {
@@ -59,13 +66,53 @@ export class SeedService implements OnApplicationBootstrap {
     const count = await this.postModel.count();
 
     if (count === 0) {
+      const seedAssetsDir = join(process.cwd(), 'seed_uploads'); // Откуда берем шаблоны
+      const uploadsDir = join(process.cwd(), 'uploads');
+
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+      const usersCount = defUsers.length;
+      let userId = 1;
       for (const [index, post] of defPosts.entries()) {
-        await this.postService.createPost({
-          ...post,
-          authorId: index + 1,
-        });
+        let finalMediaName = '';
+        const sourceFilePath = join(seedAssetsDir, post.media);
+
+        if (post.media && fs.existsSync(sourceFilePath)) {
+          // Генерируем уникальное имя файла по той же логике, что и в контроллере
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(post.media);
+          finalMediaName = `post-${uniqueSuffix}${ext}`;
+
+          // Физически копируем файл из заготовок в рабочую папку uploads
+          const destinationFilePath = join(uploadsDir, finalMediaName);
+          fs.copyFileSync(sourceFilePath, destinationFilePath);
+        }
+
+        userId = (index % usersCount) + 1;
+        console.log(userId);
+        await this.postService.createPost(
+          {
+            title: post.title,
+            content: post.content,
+            authorId: userId,
+          },
+          finalMediaName,
+        );
       }
     }
     console.log('Add Posts');
+  }
+
+  private async seedLikes() {
+    const count = await this.likeModel.count();
+
+    if (count === 0) {
+      for (const like of defLikes) {
+        await this.likeService.toggleLike(like);
+      }
+    }
+    console.log('Add Likes');
   }
 }

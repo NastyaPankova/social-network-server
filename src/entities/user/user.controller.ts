@@ -3,7 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -17,6 +19,7 @@ import { RoleGuard } from '../../auth/guards/role.guard';
 import { Roles } from '../../auth/decorators/roles.auth.decorator';
 import { UpdateUserDto } from './dto/updateUserDto';
 import { SubscriptionDto } from './dto/subscriptionDto';
+import { UserResponse } from './response/userResponse';
 
 @ApiTags('User')
 @Controller('user')
@@ -42,9 +45,17 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'get user by id' })
-  @Get('id/:id')
-  getUserById(@Param('id') id: number) {
-    return this.userService.getUserById(id);
+  @Get(':id')
+  async getUserById(@Param('id',ParseIntPipe) id: number) {
+    const data = await this.userService.getUserById(id);
+    if (!data) throw new NotFoundException();
+
+    const response: UserResponse = {
+      id: data.id,
+      name: data.name,
+    };
+
+    return response;
   }
 
   @ApiOperation({ summary: 'get user by email' })

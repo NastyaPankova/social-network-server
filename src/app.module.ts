@@ -20,9 +20,15 @@ import { RefreshTokenModule } from './entities/refreshToken/refreshToken.module'
 import cookieParser from 'cookie-parser';
 import { RefreshToken } from './entities/refreshToken/refreshToken.model';
 import { Sequelize } from 'sequelize';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/static',
+    }),
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,

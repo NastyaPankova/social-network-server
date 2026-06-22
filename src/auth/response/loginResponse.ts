@@ -1,7 +1,6 @@
-import { UserResponse } from './userResponse';
+import { UserResponse } from '../../entities/user/response/userResponse';
 
 export class LoginResponse {
   accessToken: string;
-  refreshToken: string;
   user: UserResponse;
 }

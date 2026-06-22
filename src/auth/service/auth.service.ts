@@ -5,7 +5,7 @@ import { UserService } from '../../entities/user/user.service';
 import { RefreshTokenService } from '../../entities/refreshToken/refreshToken.service';
 import { TokenService } from './token.service';
 import { PayloadDto } from '../dto/payloadDto';
-import { LoginResponse } from '../../entities/user/response/loginResponse';
+import { LoginResponse } from '../response/loginResponse';
 import { UserResponse } from '../../entities/user/response/userResponse';
 
 @Injectable()
@@ -27,13 +27,13 @@ export class AuthService {
   }
 
   async registration(dto: CreateUserDto) {
-    const new_user = await this.userService.createUser(dto);
-    const tokens = await this.tokenService.generateToken(new_user);
+    const user = await this.userService.createUser(dto);
+    const tokens = await this.tokenService.generateToken(user);
     await this.refreshTokenService.saveRefreshToken(
-      new_user.id,
+      user.id,
       tokens.refreshToken,
     );
-    return tokens;
+    return { tokens, user };
   }
 
   async logout(refreshToken: string) {

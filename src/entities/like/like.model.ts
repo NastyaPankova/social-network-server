@@ -15,12 +15,21 @@ import { LikeDto } from './dto/likeDto';
 //добавила LikeDto для корректной работы метода .create
 //почему?
 
-@Table({ tableName: 'like', timestamps: false })
+@Table({
+  tableName: 'like',
+  timestamps: false,
+  hooks: {
+    beforeBulkDestroy: (options) => {
+      options.individualHooks = true;
+    },
+  },
+})
 export class Like extends Model<Like, LikeDto> {
   @ForeignKey(() => User)
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
+    field: 'userId',
   })
   declare userId: number;
 
@@ -28,6 +37,7 @@ export class Like extends Model<Like, LikeDto> {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
+    field: 'postId',
   })
   declare postId: number;
 

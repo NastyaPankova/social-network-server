@@ -19,6 +19,7 @@ import { RefreshToken } from '../refreshToken/refreshToken.model';
 //для чего? Добавить name?
 
 interface UserCreationAttributes {
+  name: string;
   email: string;
   password: string;
 }
@@ -48,16 +49,22 @@ export class User extends Model<User, UserCreationAttributes> {
 
   @Column({
     type: DataType.STRING,
+    allowNull: false,
   })
   declare name: string;
 
   @BelongsToMany(() => Role, () => User_Role)
   roles: Role[];
 
-  @HasMany(() => Post, { onDelete: 'CASCADE' })
+  @HasMany(() => Post, {
+    foreignKey: 'authorId',
+    as: 'posts',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   posts: Post[];
 
-  @BelongsToMany(() => Post, () => Like)
+  @BelongsToMany(() => Post, { through: () => Like, as: 'likedPosts' })
   likes: Post[];
 
   //на кого подписан

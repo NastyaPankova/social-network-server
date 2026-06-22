@@ -15,14 +15,11 @@ import express from 'express';
 import { setCookieOptions } from '../../app/helpers/setCookieOptions';
 import { refreshTokenExpirationTime } from '../../app/data/expirationTime';
 import { refreshTokenCookieName } from '../../app/data/cookiesNames';
-import { LoginResponse } from '../../entities/user/response/loginResponse';
+import { LoginResponse } from '../response/loginResponse';
 import { UserResponse } from '../../entities/user/response/userResponse';
-import { Roles } from '../decorators/roles.auth.decorator';
-import { roleValues } from '../../app/data/roleValues';
-import { RoleGuard } from '../guards/role.guard';
 import { AuthGuard } from '../guards/auth.guard';
 import * as authRequest from '../dto/authRequest';
-import { RefreshTokenGuard } from '../guards/refresh.guard';
+
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -52,7 +49,6 @@ export class AuthController {
 
     const loginRespons: LoginResponse = {
       accessToken: data.tokens.accessToken,
-      refreshToken: data.tokens.refreshToken,
       user: user,
     };
 
@@ -68,11 +64,21 @@ export class AuthController {
 
     response.cookie(
       refreshTokenCookieName,
-      data.refreshToken,
+      data.tokens.refreshToken,
       setCookieOptions(refreshTokenExpirationTime),
     );
 
-    return data;
+    const user: UserResponse = {
+      id: data.user.id,
+      name: data.user.name,
+    };
+
+    const loginRespons: LoginResponse = {
+      accessToken: data.tokens.accessToken,
+      user: user,
+    };
+
+    return loginRespons;
   }
 
   //q
@@ -113,7 +119,6 @@ export class AuthController {
 
     const loginRespons: LoginResponse = {
       accessToken: data.tokens.accessToken,
-      refreshToken: data.tokens.refreshToken,
       user: user,
     };
 

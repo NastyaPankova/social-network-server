@@ -59,9 +59,15 @@ export class LikeService {
   // функия возвращает объект с полем isLiked типа boolean
   // async toggleLike(dto: LikeDto): Promise<{ isLiked: boolean }> (***)
 
-  async toggleLike(dto: LikeDto) {
+  async toggleLike(dto: LikeDto): Promise<{ likesCount: number }> {
+    // 1. Ваши отличные проверки на существование сущностей
     await isExistsById(this.userRepository, dto.userId);
+
+    // Сохраняем пост в константу, чтобы потом у него же обновить и забрать likesCount
     await isExistsById(this.postRepository, dto.postId);
+    // Примечание: Убедитесь, что ваша функция isExistsById возвращает сам найденный объект поста,
+    // а не просто true/false. Если она возвращает только boolean, то перед шагом 3
+    // нужно будет сделать: const post = await this.postRepository.findByPk(dto.postId);
 
     const like = await this.likeRepository.findOne({
       where: {
@@ -71,15 +77,21 @@ export class LikeService {
     });
 
     if (like) {
+      // Автоматически уменьшит likesCount в таблице posts благодаря хуку @AfterDestroy
       await like.destroy();
-      //todo
-      //для фронта (***)
-      //return { isLiked: false };
     } else {
+      // Автоматически увеличит likesCount в таблице posts благодаря хуку @AfterCreate
       await this.likeRepository.create(dto);
-      //todo
-      //для фронта (***)
-      //return { isLiked: true };
     }
+    const post = await this.postRepository.findByPk(dto.postId);
+
+    // 2. Перезапрашиваем пост из БД, чтобы получить обновленный счетчик лайков
+    await post!.reload();
+
+    // 3. Возвращаем объект для фронтенда. Фронтенд сам поймет статус isLiked
+    // (он просто переключит локальный стейт в компоненте, а цифру likesCount возьмет отсюда)
+    return {
+      likesCount: post!.likesCount,
+    };
   }
 }

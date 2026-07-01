@@ -45,7 +45,7 @@ export class PostController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads', // Папка в корне проекта (вне src)
+        destination: './uploads',
         filename: (req, file, callback) => {
           const uniqueSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -59,9 +59,7 @@ export class PostController {
     @Body() dto: CreatePostDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-
     const pathToMedia = file ? file.filename : '';
-
     return this.postService.createPost(dto, pathToMedia);
   }
 

@@ -46,8 +46,7 @@ export class SeedService implements OnApplicationBootstrap {
   }
 
   private async seedUsers() {
-    //todo
-    //есть ли что-то вроде ifAny?
+
     const count = await this.userModel.count();
 
     if (count === 0) {
@@ -66,7 +65,7 @@ export class SeedService implements OnApplicationBootstrap {
     const count = await this.postModel.count();
 
     if (count === 0) {
-      const seedAssetsDir = join(process.cwd(), 'seed_uploads'); // Откуда берем шаблоны
+      const seedAssetsDir = join(process.cwd(), 'seed_uploads');
       const uploadsDir = join(process.cwd(), 'uploads');
 
       if (!fs.existsSync(uploadsDir)) {
@@ -79,13 +78,13 @@ export class SeedService implements OnApplicationBootstrap {
         const sourceFilePath = join(seedAssetsDir, post.media);
 
         if (post.media && fs.existsSync(sourceFilePath)) {
-          // Генерируем уникальное имя файла по той же логике, что и в контроллере
+
           const uniqueSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(post.media);
           finalMediaName = `post-${uniqueSuffix}${ext}`;
 
-          // Физически копируем файл из заготовок в рабочую папку uploads
+
           const destinationFilePath = join(uploadsDir, finalMediaName);
           fs.copyFileSync(sourceFilePath, destinationFilePath);
         }

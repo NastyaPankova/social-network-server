@@ -5,7 +5,6 @@ import { User_User } from './user_user.model';
 import { User_UserController } from './user_user.controller';
 import { User_UserService } from './user_user.service';
 
-
 @Module({
   imports: [SequelizeModule.forFeature([User, User_User])],
   controllers: [User_UserController],

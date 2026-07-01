@@ -5,8 +5,6 @@ export class CreatePostDto {
   readonly title: string;
   @ApiProperty({ example: 'New Content' })
   readonly content: string;
-  // @ApiProperty({ example: 'New URL' })
-  // readonly media: string;
   @ApiProperty({ example: '1' })
   readonly authorId: number;
 }

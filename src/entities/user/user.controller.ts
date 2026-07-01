@@ -46,7 +46,7 @@ export class UserController {
 
   @ApiOperation({ summary: 'get user by id' })
   @Get(':id')
-  async getUserById(@Param('id',ParseIntPipe) id: number) {
+  async getUserById(@Param('id', ParseIntPipe) id: number) {
     const data = await this.userService.getUserById(id);
     if (!data) throw new NotFoundException();
 

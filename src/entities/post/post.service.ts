@@ -125,13 +125,11 @@ export class PostService {
   ): Promise<GetLimitPostResponse> {
     const limit = Number(this.configService.get<string>('LIMIT') ?? 10);
 
-    // 1. Формируем условие курсорной пагинации по времени
     const isRealCursor = cursor && cursor !== 'null' && cursor !== 'undefined';
     const whereCondition = isRealCursor
       ? { createdAt: { [Op.lt]: new Date(cursor) } }
       : {};
 
-    // 2. Запрашиваем посты из БД (+1 запасной для проверки следующей страницы)
     const posts = await this.postRepository.findAll({
       where: whereCondition,
       limit: limit + 1,
@@ -151,7 +149,6 @@ export class PostService {
     const nextPage = posts.length > limit;
     const responsePosts = nextPage ? posts.slice(0, limit) : posts;
 
-    // 3. Собираем ID постов, которые лайкнул текущий пользователь
     let userLikedPostIds: number[] = [];
 
     if (userId && responsePosts.length > 0) {
@@ -168,7 +165,6 @@ export class PostService {
       userLikedPostIds = userLikes.map((like) => like.postId);
     }
 
-    // 4. Мапим результат напрямую в массив типа PostWithLikes[] БЕЗ оператора "as"
     const formattedPosts: PostWithLikes[] = responsePosts.map((post) => {
       const plainPost = post.get({ plain: true });
 
@@ -187,7 +183,7 @@ export class PostService {
       };
     });
 
-    // 5. Расчет курсора для следующего запроса фронтенда
+
     const newCursor =
       formattedPosts.length > 0
         ? formattedPosts[formattedPosts.length - 1].createdAt
